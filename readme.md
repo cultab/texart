@@ -2,8 +2,9 @@ I don't even know if I understood the challenge correctly but whatever gets me c
 
 # Goals
 
-* loading fonts from files
-* line wraping
+- [x] loading fonts from files
+- [ ] line wraping (maybe?)
+- [ ] reading input from commandline (obviously)
 
 # Non-Goals
 
