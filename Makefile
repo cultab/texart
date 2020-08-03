@@ -1,8 +1,8 @@
 CC=g++
 CFLAGS= --std=c++11 -Wall -Wpedantic
 
-sources= texart.cpp letter.cpp
-headers= letter.hpp
+sources= texart.cpp letter.cpp parse.cpp
+headers= letter.hpp parse.hpp
 
 make:
 	${CC} ${CFLAGS} ${sources} -o texart

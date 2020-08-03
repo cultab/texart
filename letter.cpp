@@ -1,29 +1,31 @@
 #include "letter.hpp"
+#include <ostream>
+#include <sstream>
+#include <stdexcept>
 
 Letter::Letter(int width, int height, const std::string &in): width(width), height(height)
 {
-    int start, len;
     for(int i = 0; i < height; i++){
-        start = i * width;
-        len = width;
-        std::string substr = in.substr(start, len);
+        std::string substr = in.substr(i * width, width);
         /* std::cerr << "from " << start << " to "  << end << std::endl; */
         /* std::cerr << "content: |" << substr << "|" << std::endl; */
         lines.push_back(substr);
     }
 }
 
-const void Letter::writeLine(int index, std::ostream &out)
+std::string Letter::operator[](int index)
 {
-    out << lines[index];
+    if (index < 0 || index > height) {
+        throw std::out_of_range("Letter index out of range");
+    }
+    return lines[index];
 }
 
 std::ostream& operator<<(std::ostream &out, const Letter &let)
 {
     // fucking word salad, even java is better
     // TODO: use auto ???
-    std::vector<std::string>::const_iterator iter;
-    for(iter = let.lines.begin(); iter != let.lines.end(); iter++) {
+    for(auto iter = let.lines.begin(); iter != let.lines.end(); iter++) {
         out << *iter << std::endl;
     }
     return out;

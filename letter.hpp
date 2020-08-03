@@ -12,8 +12,10 @@
 class Letter {
     public:
         Letter(int width, int height, const std::string &in);
-        const void writeLine(int index, std::ostream &out);
+        std::string operator[](int index);
         fren std::ostream& operator<<(std::ostream &out, const Letter &let);
+        int getWidth() {return width;}
+        int getHeight() {return height;}
 
     private:
         // not sure if necessary, keeping track of in case
