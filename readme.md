@@ -1,4 +1,4 @@
-I don't even know if I understood the challenge correctly but whatever gets me coding works. ¯\_(ツ)_/¯
+I don't even know if I understood the challenge correctly but whatever gets me coding works. ¯\\_(ツ)_/¯
 
 # Goals
 
