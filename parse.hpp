@@ -31,6 +31,8 @@ class Parser {
         std::map<char,Letter> letters;
         Parser();
         void run();
+        int getHeight() { return cur_height; }
+        std::map<char, Letter>& getLetters() { return letters; }
 
 
 };

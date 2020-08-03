@@ -4,7 +4,9 @@ I don't even know if I understood the challenge correctly but whatever gets me c
 
 - [x] loading fonts from files
 - [ ] line wraping (maybe?)
-- [ ] reading input from commandline (obviously)
+- [x] reading input from commandline (obviously)
+- [ ] more fonts
+- [ ] better font file format, to easily support control characters and symbols
 
 # Non-Goals
 

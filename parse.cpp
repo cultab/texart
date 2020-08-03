@@ -69,15 +69,20 @@ Parser::state Parser::parse_letter()
         //cout << "i:" <<  i << endl;
         for (int j=0; j<cur_width+1; j++) {
             c = font.get();
-            if ( c == '\t' ) { // tab used to separate letters
-                c = ' ';
+
+            switch(c) {
+            case '\n':
+                break;
+            case '@':
+                lines.append(1, '@');
+                break;
+            default:
+                lines.append(1, c);
+                break;
             }
             //cout << "j:" << j << endl;
             cout << "Read char: '" << (c != '\n' ? c : 'N' ) << "'" << endl;
 
-            if (c != '\n') {
-                lines.append(1, c);
-            }
         }
     }
     cout << "letter end" << endl;
