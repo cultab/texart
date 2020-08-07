@@ -14,12 +14,15 @@ class Parser {
             RUNE,
             WIDTH,
             LETTER,
-            END
+            END,
+            STOP
         };
 
         int  cur_height;
         int  cur_width;
         char cur_rune;
+
+        std::string cur_rune_name;
         std::ifstream font;
 
         Parser::state parse_height();
@@ -28,11 +31,11 @@ class Parser {
         Parser::state parse_letter();
 
     public:
-        std::map<char,Letter> letters;
+        std::map<std::string,Letter> letters;
         Parser();
-        void run();
+        int run();
         int getHeight() { return cur_height; }
-        std::map<char, Letter>& getLetters() { return letters; }
+        std::map<std::string, Letter>& getLetters() { return letters; }
 
 
 };

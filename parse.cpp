@@ -1,18 +1,16 @@
 #include "parse.hpp"
 
+using std::cerr;
 using std::cout;
 using std::endl;
 
-Parser::Parser()
-{
-    font.open("font.txt", std::ios::in);
-}
+Parser::Parser() { font.open("bfont.txt", std::ios::in); }
 
-void Parser::run()
+int Parser::run()
 {
     state s = parse_height();
-    while (s != END) {
-        switch(s) {
+    while ( s != END && s != STOP ) {
+        switch ( s ) {
         case HEIGHT:
             s = parse_height();
             break;
@@ -25,28 +23,38 @@ void Parser::run()
         case LETTER:
             s = parse_letter();
             break;
-        case END:
+        case END: 
+            break;
+        case STOP:
             break;
         default:
-            std::cout << "?????" << std::endl;
+            cerr << "?????" << endl;
             break;
         }
     }
-    std::cout << "Parsing done!" << std::endl;
+
+    if ( s == END ) {
+        cout << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
+        return 0;
+    } else {
+        cout << "Parsing FAILED!!!" << endl;
+        return 1;
+    }
 }
 
 Parser::state Parser::parse_height()
 {
     font >> cur_height;
-    cout << "Read h:" << cur_height << endl;
+    cout << "Font height:" << cur_height << endl;
 
     return RUNE;
 }
 
 Parser::state Parser::parse_rune()
 {
-    font >> cur_rune;
-    cout << "Read r:" << cur_rune << endl;
+    font >> cur_rune_name;
+
+    cout << "Parsing letter:" << cur_rune_name << endl;
 
     return WIDTH;
 }
@@ -54,62 +62,44 @@ Parser::state Parser::parse_rune()
 Parser::state Parser::parse_width()
 {
     font >> cur_width;
-    cout << "Read w:" << cur_width << endl;
+    cout << "Current letter width:" << cur_width << endl;
 
     return LETTER;
 }
 
 Parser::state Parser::parse_letter()
 {
-    char c;
+    char        c;
     std::string lines;
 
     font.get(); // discard newline
-    for (int i=0; i<cur_height; i++) {
-        //cout << "i:" <<  i << endl;
-        for (int j=0; j<cur_width+1; j++) {
+    for ( int i = 0; i < cur_height; i++ ) {
+        // cout << "i:" <<  i << endl;
+        for ( int j = 0; j < cur_width + 1; j++ ) {
             c = font.get();
 
-            switch(c) {
+            switch ( c ) {
             case '\n':
-                break;
-            case '@':
-                lines.append(1, '@');
+                if ( j != cur_width ) {
+                    cerr << "Expected more characters on line! (Did you forget to pad with spaces?)" << endl;
+                    return STOP;
+                }
                 break;
             default:
                 lines.append(1, c);
                 break;
             }
-            //cout << "j:" << j << endl;
-            cout << "Read char: '" << (c != '\n' ? c : 'N' ) << "'" << endl;
-
+            // cout << "j:" << j << endl;
+            cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
         }
     }
-    cout << "letter end" << endl;
+    cout << "Parsed letter: " << cur_rune_name << endl;
 
-    letters.insert(std::pair<char,Letter>(cur_rune, Letter(cur_width, cur_height, lines)));
-
-    /* cout << "w and h:" << let.getWidth() << " " << let.getHeight() << endl; */
-
-    /* if (let1.first != letters.end()) { */
-    /*     cout << "1 w and h:" << let1.first->second.getWidth() << " " << let1.first->second.getHeight() << endl; */
-    /* } else { */
-    /*     cout << "end" << endl; */
-    /* } */
-    
-    /* auto let2 = letters.find('a'); */
-    /* if (let2 != letters.end()) { */
-    /*     cout << "2 w and h:" << let2->second.getWidth() << " " << let2->second.getHeight() << endl; */
-    /* } else { */
-    /*     cout << "end" << endl; */
-    /* } */
-    /* if (let1.first == let2) { */
-    /*     cout << "AAAAAAA" << endl; */
-    /* } */
+    letters.insert(std::pair<std::string, Letter>(cur_rune_name, Letter(cur_width, cur_height, lines)));
 
     c = font.peek();
 
-    if (c == EOF) {
+    if ( c == EOF ) {
         return END;
     }
     return RUNE;
