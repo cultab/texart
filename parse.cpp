@@ -4,7 +4,7 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-Parser::Parser() { font.open("bfont.txt", std::ios::in); }
+Parser::Parser() { font.open("line.txt", std::ios::in); }
 
 int Parser::run()
 {
