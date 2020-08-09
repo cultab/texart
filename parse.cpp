@@ -1,10 +1,15 @@
 #include "parse.hpp"
+#define DEFAULT_FONTFILE "font.txt"
+
+static const bool DEBUG = false;
 
 using std::cerr;
 using std::cout;
 using std::endl;
 
-Parser::Parser() { font.open("line.txt", std::ios::in); }
+Parser::Parser() { font.open(DEFAULT_FONTFILE, std::ios::in); }
+
+Parser::Parser(std::string fontfile) { font.open(fontfile, std::ios::in); }
 
 int Parser::run()
 {
@@ -23,7 +28,7 @@ int Parser::run()
         case LETTER:
             s = parse_letter();
             break;
-        case END: 
+        case END:
             break;
         case STOP:
             break;
@@ -34,10 +39,12 @@ int Parser::run()
     }
 
     if ( s == END ) {
-        cout << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
+        if ( DEBUG )
+            cout << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
         return 0;
     } else {
-        cout << "Parsing FAILED!!!" << endl;
+        if ( DEBUG )
+            cout << "Parsing FAILED!!!" << endl;
         return 1;
     }
 }
@@ -45,7 +52,8 @@ int Parser::run()
 Parser::state Parser::parse_height()
 {
     font >> cur_height;
-    cout << "Font height:" << cur_height << endl;
+    if ( DEBUG )
+        cout << "Font height:" << cur_height << endl;
 
     return RUNE;
 }
@@ -54,7 +62,8 @@ Parser::state Parser::parse_rune()
 {
     font >> cur_rune_name;
 
-    cout << "Parsing letter:" << cur_rune_name << endl;
+    if ( DEBUG )
+        cout << "Parsing letter:" << cur_rune_name << endl;
 
     return WIDTH;
 }
@@ -62,7 +71,8 @@ Parser::state Parser::parse_rune()
 Parser::state Parser::parse_width()
 {
     font >> cur_width;
-    cout << "Current letter width:" << cur_width << endl;
+    if ( DEBUG )
+        cout << "Current letter width:" << cur_width << endl;
 
     return LETTER;
 }
@@ -80,8 +90,11 @@ Parser::state Parser::parse_letter()
 
             switch ( c ) {
             case '\n':
-                if ( j != cur_width ) {
+                if ( j < cur_width ) {
                     cerr << "Expected more characters on line! (Did you forget to pad with spaces?)" << endl;
+                    return STOP;
+                } else if ( j > cur_width ) {
+                    cerr << "Expected newline! (Did you forget to trim extra spaces?)" << endl;
                     return STOP;
                 }
                 break;
@@ -90,10 +103,12 @@ Parser::state Parser::parse_letter()
                 break;
             }
             // cout << "j:" << j << endl;
-            cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
+            if ( DEBUG )
+                cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
         }
     }
-    cout << "Parsed letter: " << cur_rune_name << endl;
+    if ( DEBUG )
+        cout << "Parsed letter: " << cur_rune_name << endl;
 
     letters.insert(std::pair<std::string, Letter>(cur_rune_name, Letter(cur_width, cur_height, lines)));
 

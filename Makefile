@@ -9,3 +9,6 @@ make:
 
 run: make
 	./texart
+
+test: make
+	./texart asdf

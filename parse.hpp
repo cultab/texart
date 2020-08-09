@@ -33,6 +33,7 @@ class Parser {
     public:
         std::map<std::string,Letter> letters;
         Parser();
+        Parser(std::string fontfile);
         int run();
         int getHeight() { return cur_height; }
         std::map<std::string, Letter>& getLetters() { return letters; }
