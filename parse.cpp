@@ -7,13 +7,14 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-Parser::Parser() { font.open(DEFAULT_FONTFILE, std::ios::in); }
+Parser::Parser(): cur_line(1) { font.open(DEFAULT_FONTFILE, std::ios::in); }
 
-Parser::Parser(std::string fontfile) { font.open(fontfile, std::ios::in); }
+Parser::Parser(std::string fontfile): cur_line(1) { font.open(fontfile, std::ios::in); }
 
 int Parser::run()
 {
     state s = parse_height();
+
     while ( s != END && s != STOP ) {
         switch ( s ) {
         case HEIGHT:
@@ -55,6 +56,7 @@ Parser::state Parser::parse_height()
     if ( DEBUG )
         cout << "Font height:" << cur_height << endl;
 
+    cur_line++;
     return RUNE;
 }
 
@@ -74,6 +76,7 @@ Parser::state Parser::parse_width()
     if ( DEBUG )
         cout << "Current letter width:" << cur_width << endl;
 
+    cur_line++;
     return LETTER;
 }
 
@@ -83,30 +86,44 @@ Parser::state Parser::parse_letter()
     std::string lines;
 
     font.get(); // discard newline
-    for ( int i = 0; i < cur_height; i++ ) {
-        // cout << "i:" <<  i << endl;
-        for ( int j = 0; j < cur_width + 1; j++ ) {
-            c = font.get();
 
-            switch ( c ) {
-            case '\n':
-                if ( j < cur_width ) {
-                    cerr << "Expected more characters on line! (Did you forget to pad with spaces?)" << endl;
-                    return STOP;
-                } else if ( j > cur_width ) {
-                    cerr << "Expected newline! (Did you forget to trim extra spaces?)" << endl;
-                    return STOP;
-                }
-                break;
-            default:
-                lines.append(1, c);
-                break;
+    int  h       = 0; // height
+    int  w       = 0; // width
+    bool reset_w = false; // reset width ?
+
+    while ( h < cur_height * (cur_width + 1) ) {
+        c = font.get();
+
+        if ( DEBUG )
+            cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
+
+        switch ( c ) {
+        case '\n':
+            if ( w < cur_width ) {
+                cerr << "Line " << cur_line << ": Expected more characters! (Did you forget to pad with spaces?)" << endl;
+                return STOP;
+            } else if ( w != cur_width ) {
+                cerr << "Line " << cur_line << ": Too many characters! (Did you forget to trim extra spaces?)" << endl;
+                return STOP;
             }
-            // cout << "j:" << j << endl;
-            if ( DEBUG )
-                cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
+            cur_line++;
+            reset_w = true;
+            break;
+        default:
+            lines.append(1, c);
+            break;
+        }
+
+        h++;
+    
+        if ( reset_w ) {
+            w = 0;
+            reset_w = false;
+        } else {
+            w++;
         }
     }
+
     if ( DEBUG )
         cout << "Parsed letter: " << cur_rune_name << endl;
 
@@ -117,5 +134,6 @@ Parser::state Parser::parse_letter()
     if ( c == EOF ) {
         return END;
     }
+
     return RUNE;
 }

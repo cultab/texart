@@ -22,6 +22,8 @@ class Parser {
         int  cur_width;
         char cur_rune;
 
+        int cur_line;
+
         std::string cur_rune_name;
         std::ifstream font;
 
