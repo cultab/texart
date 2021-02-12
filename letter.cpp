@@ -25,6 +25,7 @@ std::ostream& operator<<(std::ostream &out, const Letter &let)
 {
     // fucking word salad, even java is better
     // TODO: use auto ???
+    // done, still gonna leave comment here haha
     for(auto iter = let.lines.begin(); iter != let.lines.end(); iter++) {
         out << *iter << std::endl;
     }

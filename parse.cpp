@@ -1,5 +1,6 @@
 #include "parse.hpp"
-#define DEFAULT_FONTFILE "font.txt"
+
+#define DEFAULT_FONTFILE "line.txr"
 
 static const bool DEBUG = false;
 
