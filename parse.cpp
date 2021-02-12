@@ -58,11 +58,11 @@ int Parser::run()
 
     if ( s == END ) {
         if ( DEBUG )
-            cout << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
+            cerr << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
         return 0;
     } else {
         if ( DEBUG )
-            cout << "Parsing FAILED!!!" << endl;
+            cerr << "Parsing FAILED!!!" << endl;
         return 1;
     }
 }
@@ -71,7 +71,7 @@ Parser::state Parser::parse_height()
 {
     font >> cur_height;
     if ( DEBUG )
-        cout << "Font height:" << cur_height << endl;
+        cerr << "Font height:" << cur_height << endl;
 
     cur_line++;
     return RUNE;
@@ -82,7 +82,7 @@ Parser::state Parser::parse_rune()
     font >> cur_rune_name;
 
     if ( DEBUG )
-        cout << "Parsing letter:" << cur_rune_name << endl;
+        cerr << "Parsing letter:" << cur_rune_name << endl;
 
     return WIDTH;
 }
@@ -91,7 +91,7 @@ Parser::state Parser::parse_width()
 {
     font >> cur_width;
     if ( DEBUG )
-        cout << "Current letter width:" << cur_width << endl;
+        cerr << "Current letter width:" << cur_width << endl;
 
     cur_line++;
     return LETTER;
@@ -112,7 +112,7 @@ Parser::state Parser::parse_letter()
         c = font.get();
 
         if ( DEBUG )
-            cout << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
+            cerr << "Read char: '" << (c != '\n' ? c : 'N') << "'" << endl;
 
         switch ( c ) {
         case '\n':
@@ -142,7 +142,7 @@ Parser::state Parser::parse_letter()
     }
 
     if ( DEBUG )
-        cout << "Parsed letter: " << cur_rune_name << endl;
+        cerr << "Parsed letter: " << cur_rune_name << endl;
 
     letters.insert(std::pair<std::string, Letter>(cur_rune_name, Letter(cur_width, cur_height, lines)));
 
