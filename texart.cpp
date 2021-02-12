@@ -17,7 +17,6 @@ int main(int argc, char **argv)
 {
     std::string input;
     std::string fontfile;
-    Parser prsr;
 
     bool skip = false;
     
@@ -37,9 +36,9 @@ int main(int argc, char **argv)
     }
 
     // init parser
-    if ( fontfile.empty() ) {
-        prsr = Parser();
-    } else {
+    Parser prsr;
+
+    if ( !fontfile.empty() ) {
         prsr = Parser(fontfile);
     }
 

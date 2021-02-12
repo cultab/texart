@@ -1,16 +1,32 @@
 #include "parse.hpp"
+#include <exception>
+#include <new>
+#include <string>
 
-#define DEFAULT_FONTFILE "line.txr"
+static const std::string DEFAULT_FONT_LOCATION = "/usr/local/share/texart/";
+static const std::string DEFAULT_FONTFILE = DEFAULT_FONT_LOCATION + "line_smol.txr";
 
 static const bool DEBUG = false;
 
 using std::cerr;
-using std::cout;
+//using std::cout;
 using std::endl;
 
-Parser::Parser(): cur_line(1) { font.open(DEFAULT_FONTFILE, std::ios::in); }
+Parser::Parser(): cur_line(1) {
+    font.open(DEFAULT_FONTFILE, std::ios::in);
+    if (!font.is_open()) {
+        cerr << "Could not open default font file " << DEFAULT_FONTFILE << endl;
+        exit(2);
+    }
+}
 
-Parser::Parser(std::string fontfile): cur_line(1) { font.open(fontfile, std::ios::in); }
+Parser::Parser(std::string fontfile): cur_line(1) {
+    font.open(DEFAULT_FONT_LOCATION + fontfile, std::ios::in);
+    if (!font.is_open()) {
+        cerr << "Could not open font file: " << fontfile << endl;
+        exit(2);
+    }
+}
 
 int Parser::run()
 {
