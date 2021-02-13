@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <map>
 
@@ -25,6 +26,7 @@ class Parser {
         int cur_line;
 
         std::string cur_rune_name;
+        std::string fontfile;
         std::ifstream font;
 
         Parser::state parse_height();
@@ -36,6 +38,7 @@ class Parser {
         std::map<std::string,Letter> letters;
         Parser();
         Parser(std::string fontfile);
+        void open_font();
         int run();
         int getHeight() { return cur_height; }
         std::map<std::string, Letter>& getLetters() { return letters; }
