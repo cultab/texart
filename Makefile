@@ -5,13 +5,25 @@ RESOURCES=$(PREFIX)/share
 CC=g++
 CFLAGS= --std=c++11 -Wall -Wpedantic
 
-sources= texart.cpp letter.cpp parse.cpp
-headers= letter.hpp parse.hpp
+SRC= texart.cpp letter.cpp parse.cpp
+OBJ= $(SRC:.cpp=.o)
 
-compile:
-	${CC} ${CFLAGS} ${sources} -o texart
+all: texart
 
-install: compile
+.cpp.o:
+	$(CC) $(CFLAGS) $(SRC) -c $<
+
+letter.o: letter.hpp
+parse.o: parse.hpp
+texart.o: letter.hpp parse.hpp
+
+texart: $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o texart
+
+clean:
+	rm -f texart $(OBJ)
+
+install: texart
 	mkdir -p $(PREFIX)/bin
 	cp -f texart $(PREFIX)/bin
 	chmod 755 $(PREFIX)/bin/texart
@@ -22,11 +34,12 @@ install: compile
 	chmod 644 $(RESOURCES)/texart/*.txr
 
 uninstall:
-	rm -r $(PREFIX)/bin/texart
+	rm $(PREFIX)/bin/texart
 	#rm -r $(MANPREFIX)/man1/texart.1
+	rm -f $(RESOURCES)/texart/*.txr
 
-test: make
+test: texart
 	./texart asdf
 
-run: make
+run: texart
 	./texart
