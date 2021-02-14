@@ -43,3 +43,5 @@ test: texart
 
 run: texart
 	./texart
+
+.PHONY: all clean install uninstall test run
