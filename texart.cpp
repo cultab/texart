@@ -59,7 +59,9 @@ int main(int argc, char **argv)
             }
         } else {
             skip_next = false;
+#ifdef DEBUG
             cerr << "skipping " << argv[i] << endl;
+#endif
         }
     }
 
