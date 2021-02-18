@@ -17,6 +17,11 @@ letter.o: letter.hpp
 parse.o: parse.hpp
 texart.o: letter.hpp parse.hpp
 
+debug:
+	make _debug -B
+_debug: CFLAGS += -g -DDEBUG
+_debug: texart
+
 texart: $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o texart
 
@@ -44,4 +49,4 @@ test: texart
 run: texart
 	./texart
 
-.PHONY: all clean install uninstall test run
+.PHONY: all _debug debug clean install uninstall test run

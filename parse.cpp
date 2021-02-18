@@ -3,13 +3,12 @@
 #include <exception>
 #include <fstream>
 #include <new>
+#include <ostream>
 #include <stdexcept>
 #include <string>
 
 static const std::string DEFAULT_FONT_LOCATION = "/usr/local/share/texart/";
 static const std::string DEFAULT_FONTFILE      = "line_smol.txr";
-
-static const bool DEBUG = false;
 
 using std::cerr;
 // using std::cout;
@@ -75,17 +74,17 @@ int Parser::run()
         case STOP:
             break;
         default:
-            cerr << "?????" << endl;
+            cerr << "????? How ?????" << endl;
             break;
         }
     }
 
     if ( s == END ) {
-        if ( DEBUG )
-            cerr << "Parsing Completed Succesfully!" << endl << "probably.." << endl;
+#ifdef DEBUG
+        cerr << "Parsing Completed Succesfully!" << "probably.." << endl;
+#endif
         return 0;
     } else {
-        /* if ( DEBUG ) */
         cerr << "Parsing fontfile: \"" << fontfile << "\" failed."
              << endl; // we want to know this even when not debugging
         return 1;
@@ -95,8 +94,9 @@ int Parser::run()
 Parser::state Parser::parse_height()
 {
     font >> cur_height;
-    if ( DEBUG )
+#ifdef DEBUG
         cerr << "Font height:" << cur_height << endl;
+#endif
     if ( cur_height == 0 ) {
         cerr << "Line " << cur_line << ": font height can not be 0." << endl;
         return STOP;
@@ -113,8 +113,9 @@ Parser::state Parser::parse_rune()
 {
     font >> cur_rune_name;
 
-    if ( DEBUG )
+#ifdef DEBUG
         cerr << "Parsing letter:" << cur_rune_name << endl;
+#endif
 
     return WIDTH;
 }
@@ -122,8 +123,9 @@ Parser::state Parser::parse_rune()
 Parser::state Parser::parse_width()
 {
     font >> cur_width;
-    if ( DEBUG )
+#ifdef DEBUG
         cerr << "Current letter width:" << cur_width << endl;
+#endif
 
     cur_line++;
     return LETTER;
@@ -143,8 +145,9 @@ Parser::state Parser::parse_letter()
     while ( h < cur_height * (cur_width + 1) ) {
         c = font.get();
 
-        if ( DEBUG )
+#ifdef DEBUG
             cerr << "Read char: '" << (c != '\n' ? std::string(1, c) : "\\n") << "'" << endl;
+#endif
 
         switch ( c ) {
         case '\n':
@@ -174,8 +177,9 @@ Parser::state Parser::parse_letter()
         }
     }
 
-    if ( DEBUG )
+#ifdef DEBUG
         cerr << "Parsed letter: " << cur_rune_name << endl;
+#endif
 
     letters.insert(std::pair<std::string, Letter>(cur_rune_name, Letter(cur_width, cur_height, lines)));
 

@@ -1,6 +1,7 @@
 #include "letter.hpp"
 #include "parse.hpp"
 
+#include <any>
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
@@ -13,25 +14,52 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+// helper function to hash strings TODO: check for collisions
+constexpr unsigned int hash(const char *s, int off = 0) { return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off]; }
+
 int main(int argc, char **argv)
 {
     std::string input;
     std::string fontfile;
 
-    bool skip = false;
-    
-    // copy input and check for fontfile flag
+    bool skip_next = false;
+
     for ( int i = 1; i < argc; i++ ) {
-        if ( std::strcmp(argv[i], "-f") == 0 ) {
-            //cout << "Fontfile flag?" << argv[i] << endl;
-            fontfile = argv[i + 1];
-            skip = true;
-        } else {
-            if (!skip) {
-            input.append(argv[i]);
-            input.append(" ");
+        if ( !skip_next ) {
+            switch ( hash(argv[i]) ) {
+            case hash("-f"):
+            case hash("--font"):
+                if ( i + i <= argc ) {
+#ifdef DEBUG
+                    cerr << "reading font from: " << fontfile << endl;
+#endif
+                    skip_next = true;
+                    fontfile  = argv[i + 1];
+                    break;
+                } else {
+                    cerr << argv[0] << ": -f and --font need to be followed by a FONTFILE." << endl << endl;
+                } // fallthrough TODO: this is a hack, use a helpstring
+            case hash("-h"):
+            case hash("--help"):
+                cerr << argv[0] << " [flags] input_text" << endl
+                     << "[flags]: " << endl
+                     << "-h, --help          Print this message and exit." << endl
+                     << "-f FONTFILE, --font FONTFILE" << endl
+                     << "                    Use FONTFILE as the fontfile." << endl
+                     << "-v                  Ignored." << endl;
+                exit(0);
+            case hash("-v"):
+                break;
+            default:
+#ifdef DEBUG
+                cerr << "reading input " << argv[i] << endl;
+#endif
+                input.append(argv[i]);
+                break;
             }
-            skip = false;
+        } else {
+            skip_next = false;
+            cerr << "skipping " << argv[i] << endl;
         }
     }
 
@@ -42,6 +70,7 @@ int main(int argc, char **argv)
         prsr = Parser(fontfile);
     }
 
+    // parsing failed, exit
     if ( prsr.run() != 0 ) {
         std::exit(1);
     }
@@ -53,6 +82,11 @@ int main(int argc, char **argv)
     Letter separator_let = letter_map.find("separator")->second;
 
     std::vector<Letter> letter_vec;
+
+    // exit early if not input text is given
+    if ( input.empty() ) {
+        exit(0);
+    }
 
     // fill letter vector with appropriate letters
     for ( char ch : input ) {
