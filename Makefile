@@ -19,9 +19,10 @@ texart.o: letter.hpp parse.hpp
 
 debug:
 	make _debug -B
-_debug: CFLAGS += -g -DDEBUG
+_debug: CFLAGS += -g -DDEBUG -Og
 _debug: texart
 
+texart: CFLAGS += -O3
 texart: $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o texart
 
