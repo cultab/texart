@@ -1,53 +1,53 @@
-PREFIX=/usr/local
-MANPREFIX=$(PREFIX)/share/man
-RESOURCES=$(PREFIX)/share
+TARGET:=texart
 
-CC=g++
-CFLAGS= --std=c++11 -Wall -Wpedantic
+CC := g++
+CFLAGS = --std=c++11 -Wall -Wpedantic
 
-SRC= texart.cpp letter.cpp parse.cpp
-OBJ= $(SRC:.cpp=.o)
+PREFIX = /usr/local
+MANPREFIX = $(PREFIX)/share/man
+RESOURCES = $(PREFIX)/share
 
-all: texart
+SRC := $(wildcard *.cpp)
+OBJ := $(SRC:.cpp=.o)
 
-.cpp.o:
-	$(CC) $(CFLAGS) $(SRC) -c $<
+all: $(TARGET)
 
 letter.o: letter.hpp
-parse.o: parse.hpp
-texart.o: letter.hpp parse.hpp
+parse.o: parse.hpp letter.hpp
+texart.o: parse.hpp letter.hpp
 
-debug:
-	make _debug -B
-_debug: CFLAGS += -g -DDEBUG -Og
-_debug: texart
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $<
 
-texart: CFLAGS += -O3
-texart: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o texart
+debug: CFLAGS += -g -DDEBUG -Og
+debug: $(TARGET)
+
+$(TARGET): CFLAGS += -O3
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
 clean:
-	rm -f texart $(OBJ)
+	rm -f $(TARGET) $(OBJ)
 
-install: texart
-	mkdir -p $(PREFIX)/bin
-	cp -f texart $(PREFIX)/bin
-	chmod 755 $(PREFIX)/bin/texart
+install: $(TARGET)
+	mkdir -vp        $(PREFIX)/bin/
+	cp -vf $(TARGET) $(PREFIX)/bin/
+	chmod 755        $(PREFIX)/bin/$(TARGET)
+	mkdir -vp   $(RESOURCES)/$(TARGET)
+	cp -v *.txr $(RESOURCES)/$(TARGET)
+	chmod 644   $(RESOURCES)/$(TARGET)/*.txr
 	#mkdir -p $(MANPREFIX)/man1
 	#chmod 644 $(MANPREFIX)/man1/st.1
-	mkdir -p $(RESOURCES)/texart
-	cp *.txr $(RESOURCES)/texart
-	chmod 644 $(RESOURCES)/texart/*.txr
 
 uninstall:
-	rm $(PREFIX)/bin/texart
-	#rm -r $(MANPREFIX)/man1/texart.1
-	rm -f $(RESOURCES)/texart/*.txr
+	rm -vf $(PREFIX)/bin/$(TARGET)
+	rm -vf $(RESOURCES)/$(TARGET)/*.txr
+	#rm -vf $(MANPREFIX)/man1/texart.1
 
-test: texart
-	./texart asdf
+test: $(TARGET)
+	./$(TARGET) asdf
 
-run: texart
+run: $(TARGET)
 	./texart
 
-.PHONY: all _debug debug clean install uninstall test run
+.PHONY: all debug clean install uninstall test run

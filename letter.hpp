@@ -21,6 +21,6 @@ class Letter {
         // not sure if necessary, keeping track of in case
         int width; 
         int height;
-        
+
         std::vector<std::string> lines;
 };

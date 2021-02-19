@@ -3,14 +3,14 @@ I don't even know if I understood the challenge correctly but whatever gets me c
 # Goals
 
 - [x] loading fonts from files
-- [ ] line wraping (maybe?)
 - [x] reading input from commandline (obviously)
 - [ ] more fonts
 - [ ] better font file format, to easily support control characters and symbols
 
 # Non-Goals
 
-* UTF-8 character set (maybe?)
+* line wraping (maybe?)
+* UTF-8 character set fonts (maybe?)
 * loading figlet/toilet fonts
 
 # All the Challenges

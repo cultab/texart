@@ -1,3 +1,4 @@
 texart
 out.txt
 *.o
+testing/*

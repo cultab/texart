@@ -12,3 +12,7 @@
 # flags
 
 - -v --verbose flag? to enable parsing info messages even if not compiled as such?
+
+# makefile
+
+- is it sane?
