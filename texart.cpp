@@ -14,7 +14,7 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-// helper function to hash strings TODO: check for collisions
+// helper function to hash strings  TODO: check for collisions
 constexpr unsigned int hash(const char *s, int off = 0) { return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off]; }
 
 int main(int argc, char **argv)
@@ -22,23 +22,23 @@ int main(int argc, char **argv)
     std::string input;
     std::string fontfile;
 
-    bool skip_next = false;
+    bool next_is_arg = false;
 
-    for ( int i = 1; i < argc; i++ ) {
-        if ( !skip_next ) {
-            switch ( hash(argv[i]) ) {
+    for (int i = 1; i < argc; i++) {
+        if (!next_is_arg) {
+            switch (hash(argv[i])) {
             case hash("-f"):
             case hash("--font"):
-                if ( i + i <= argc ) {
+                if (i + i <= argc) {
 #ifdef DEBUG
                     cerr << "reading font from: " << fontfile << endl;
 #endif
-                    skip_next = true;
-                    fontfile  = argv[i + 1];
+                    next_is_arg = true;
+                    fontfile = argv[i + 1];
                     break;
                 } else {
                     cerr << argv[0] << ": -f and --font need to be followed by a FONTFILE." << endl << endl;
-                } // fallthrough TODO: this is a hack, use a helpstring
+                } // fallthrough  TODO: this is a hack, use a helpstring
             case hash("-h"):
             case hash("--help"):
                 cerr << argv[0] << " [flags] input_text" << endl
@@ -55,10 +55,13 @@ int main(int argc, char **argv)
                 cerr << "reading input " << argv[i] << endl;
 #endif
                 input.append(argv[i]);
+                if (i != argc) {
+                    input.append(" ");
+                }
                 break;
             }
         } else {
-            skip_next = false;
+            next_is_arg = false;
 #ifdef DEBUG
             cerr << "skipping " << argv[i] << endl;
 #endif
@@ -68,12 +71,12 @@ int main(int argc, char **argv)
     // init parser
     Parser prsr;
 
-    if ( !fontfile.empty() ) {
+    if (!fontfile.empty()) {
         prsr = Parser(fontfile);
     }
 
     // parsing failed, exit
-    if ( prsr.run() != 0 ) {
+    if (prsr.run() != 0) {
         std::exit(1);
     }
 
@@ -86,15 +89,15 @@ int main(int argc, char **argv)
     std::vector<Letter> letter_vec;
 
     // exit early if not input text is given
-    if ( input.empty() ) {
+    if (input.empty()) {
         exit(0);
     }
 
     // fill letter vector with appropriate letters
-    for ( char ch : input ) {
+    for (char ch : input) {
         auto let_iter = letter_map.end();
 
-        switch ( ch ) {
+        switch (ch) {
         case ' ':
             let_iter = letter_map.find("space");
             break;
@@ -102,7 +105,7 @@ int main(int argc, char **argv)
             let_iter = letter_map.find(std::string(1, std::tolower(ch)));
             break;
         }
-        if ( let_iter == letter_map.end() ) {
+        if (let_iter == letter_map.end()) {
             cerr << "Letter for character '" << ch << "' not found!" << endl;
         } else {
             letter_vec.push_back(let_iter->second);
@@ -112,8 +115,8 @@ int main(int argc, char **argv)
     int height = prsr.getHeight();
 
     // print
-    for ( int line = 0; line < height; line++ ) {
-        for ( auto letter : letter_vec ) {
+    for (int line = 0; line < height; line++) {
+        for (auto letter : letter_vec) {
             cout << letter[line];
             cout << separator_let[line];
         }

@@ -1,6 +1,7 @@
 TARGET:=texart
 
-CC := g++
+CC := clang++
+CXXFLAGS='-D_GLIBCXX_USE_CXX11_ABI=0'
 CFLAGS = --std=c++11 -Wall -Wpedantic
 
 PREFIX = /usr/local

@@ -8,31 +8,27 @@
 #include <string>
 
 static const std::string DEFAULT_FONT_LOCATION = "/usr/local/share/texart/";
-static const std::string DEFAULT_FONTFILE      = "line_smol.txr";
+static const std::string DEFAULT_FONTFILE = "line_smol.txr";
 
 using std::cerr;
 // using std::cout;
 using std::endl;
 
-Parser::Parser()
-    : cur_line(1)
-    , fontfile(DEFAULT_FONTFILE)
+Parser::Parser() : cur_line(1), fontfile(DEFAULT_FONTFILE)
 {
     try {
         open_font();
-    } catch ( std::runtime_error &re ) {
+    } catch (std::runtime_error &re) {
         cerr << re.what() << endl;
         exit(2);
     }
 }
 
-Parser::Parser(std::string file)
-    : cur_line(1)
-    , fontfile(file)
+Parser::Parser(std::string file) : cur_line(1), fontfile(file)
 {
     try {
         open_font();
-    } catch ( std::runtime_error &re ) {
+    } catch (std::runtime_error &re) {
         cerr << re.what() << endl;
         exit(2);
     }
@@ -42,11 +38,11 @@ void Parser::open_font()
 {
     font.open(fontfile);
 
-    if ( !font.is_open() ) {
+    if (!font.is_open()) {
         font.open(DEFAULT_FONT_LOCATION + fontfile);
     }
 
-    if ( !font.is_open() ) {
+    if (!font.is_open()) {
         throw std::runtime_error("Fontfile \"" + fontfile + "\" could not be opened.");
     }
 }
@@ -55,8 +51,8 @@ int Parser::run()
 {
     state s = parse_height();
 
-    while ( s != END && s != STOP ) {
-        switch ( s ) {
+    while (s != END && s != STOP) {
+        switch (s) {
         case HEIGHT:
             s = parse_height();
             break;
@@ -79,9 +75,10 @@ int Parser::run()
         }
     }
 
-    if ( s == END ) {
+    if (s == END) {
 #ifdef DEBUG
-        cerr << "Parsing Completed Succesfully!" << "probably.." << endl;
+        cerr << "Parsing Completed Succesfully!"
+             << "probably.." << endl;
 #endif
         return 0;
     } else {
@@ -95,12 +92,12 @@ Parser::state Parser::parse_height()
 {
     font >> cur_height;
 #ifdef DEBUG
-        cerr << "Font height:" << cur_height << endl;
+    cerr << "Font height:" << cur_height << endl;
 #endif
-    if ( cur_height == 0 ) {
+    if (cur_height == 0) {
         cerr << "Line " << cur_line << ": font height can not be 0." << endl;
         return STOP;
-    } else if ( cur_height < 0 ) {
+    } else if (cur_height < 0) {
         cerr << "Line " << cur_line << ": font height can not negative (" << cur_height << ")." << endl;
         return STOP;
     }
@@ -114,7 +111,7 @@ Parser::state Parser::parse_rune()
     font >> cur_rune_name;
 
 #ifdef DEBUG
-        cerr << "Parsing letter:" << cur_rune_name << endl;
+    cerr << "Parsing letter:" << cur_rune_name << endl;
 #endif
 
     return WIDTH;
@@ -124,7 +121,7 @@ Parser::state Parser::parse_width()
 {
     font >> cur_width;
 #ifdef DEBUG
-        cerr << "Current letter width:" << cur_width << endl;
+    cerr << "Current letter width:" << cur_width << endl;
 #endif
 
     cur_line++;
@@ -133,29 +130,29 @@ Parser::state Parser::parse_width()
 
 Parser::state Parser::parse_letter()
 {
-    char        c;
+    char c;
     std::string lines;
 
     font.get(); // discard newline
 
-    int  h       = 0; // height
-    int  w       = 0; // width
+    int h = 0;            // height
+    int w = 0;            // width
     bool reset_w = false; // reset width ?
 
-    while ( h < cur_height * (cur_width + 1) ) {
+    while (h < cur_height * (cur_width + 1)) {
         c = font.get();
 
 #ifdef DEBUG
-            cerr << "Read char: '" << (c != '\n' ? std::string(1, c) : "\\n") << "'" << endl;
+        cerr << "Read char: '" << (c != '\n' ? std::string(1, c) : "\\n") << "'" << endl;
 #endif
 
-        switch ( c ) {
+        switch (c) {
         case '\n':
-            if ( w < cur_width ) {
+            if (w < cur_width) {
                 cerr << "Line " << cur_line << ": Expected more characters! (Did you forget to pad with spaces?)"
                      << endl;
                 return STOP;
-            } else if ( w != cur_width ) {
+            } else if (w != cur_width) {
                 cerr << "Line " << cur_line << ": Too many characters! (Did you forget to trim extra spaces?)" << endl;
                 return STOP;
             }
@@ -169,8 +166,8 @@ Parser::state Parser::parse_letter()
 
         h++;
 
-        if ( reset_w ) {
-            w       = 0;
+        if (reset_w) {
+            w = 0;
             reset_w = false;
         } else {
             w++;
@@ -178,14 +175,14 @@ Parser::state Parser::parse_letter()
     }
 
 #ifdef DEBUG
-        cerr << "Parsed letter: " << cur_rune_name << endl;
+    cerr << "Parsed letter: " << cur_rune_name << endl;
 #endif
 
     letters.insert(std::pair<std::string, Letter>(cur_rune_name, Letter(cur_width, cur_height, lines)));
 
     c = font.peek();
 
-    if ( c == EOF ) {
+    if (c == EOF) {
         return END;
     }
 

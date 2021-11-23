@@ -16,3 +16,5 @@
 # makefile
 
 - is it sane?
+
+# kerning?

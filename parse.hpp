@@ -1,47 +1,38 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <stdexcept>
-#include <string>
-#include <map>
-
 #include "letter.hpp"
 
-class Parser {
-    private:
-        enum state {
-            HEIGHT,
-            RUNE,
-            WIDTH,
-            LETTER,
-            END,
-            STOP
-        };
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <stdexcept>
+#include <string>
 
-        int  cur_height;
-        int  cur_width;
-        char cur_rune;
+class Parser
+{
+  private:
+    enum state { HEIGHT, RUNE, WIDTH, LETTER, END, STOP };
 
-        int cur_line;
+    int cur_height;
+    int cur_width;
 
-        std::string cur_rune_name;
-        std::string fontfile;
-        std::ifstream font;
+    int cur_line;
 
-        Parser::state parse_height();
-        Parser::state parse_rune();
-        Parser::state parse_width();
-        Parser::state parse_letter();
+    std::string cur_rune_name;
+    std::string fontfile;
+    std::ifstream font;
+    std::map<std::string, Letter> letters;
 
-    public:
-        std::map<std::string,Letter> letters;
-        Parser();
-        Parser(std::string fontfile);
-        void open_font();
-        int run();
-        int getHeight() { return cur_height; }
-        std::map<std::string, Letter>& getLetters() { return letters; }
+    Parser::state parse_height();
+    Parser::state parse_rune();
+    Parser::state parse_width();
+    Parser::state parse_letter();
 
-
+  public:
+    Parser();
+    Parser(std::string fontfile);
+    void open_font();
+    int run();
+    int getHeight() { return cur_height; }
+    std::map<std::string, Letter> &getLetters() { return letters; }
 };
